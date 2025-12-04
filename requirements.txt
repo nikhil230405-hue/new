@@ -3,7 +3,6 @@ PyPDF2
 numpy
 sentence-transformers
 faiss-cpu
-faiss
 groq
 scikit-learn
 pandas
