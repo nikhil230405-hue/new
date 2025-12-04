@@ -3,6 +3,17 @@ PyPDF2
 numpy
 sentence-transformers
 faiss-cpu
+faiss
 groq
 scikit-learn
 pandas
+streamlit
+scikit-learn
+pandas
+numpy
+sentence-transformers
+faiss-cpu
+langchain
+langchain-community
+langchain-text-splitters
+pypdf
