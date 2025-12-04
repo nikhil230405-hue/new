@@ -1,5 +1,5 @@
 import streamlit as st
-import faiss
+import faiss_cpu as faiss
 import numpy as np
 import pickle
 from groq import Groq
