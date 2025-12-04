@@ -252,7 +252,6 @@ with st.sidebar:
     4. LLM generates answer  
     """)
     st.markdown("---")
-    st.info("Make sure your `GROQ_API_KEY` is added in Streamlit Secrets.")
 
 # ----------------------------------------------
 # Load API Key
