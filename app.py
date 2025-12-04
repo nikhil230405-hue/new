@@ -234,7 +234,7 @@ from groq import Groq
 # Page Configuration
 # ----------------------------------------------
 st.set_page_config(
-    page_title="University FAQ RAG Bot",
+    page_title="University FAQ Assistant",
     page_icon="🎓",
     layout="wide"
 )
@@ -243,15 +243,13 @@ st.set_page_config(
 # Sidebar
 # ----------------------------------------------
 with st.sidebar:
-    st.title("📚 University FAQ RAG")
+    st.title("📚 University FAQ Assistant")
     st.markdown("""
     ### How to Use:
     1. Upload the university FAQ PDF  
     2. Ask any question  
     3. Model retrieves relevant content  
-    4. LLM generates accurate answer  
-
-    **Powered by Groq + RAG + ML Classification**
+    4. LLM generates answer  
     """)
     st.markdown("---")
     st.info("Make sure your `GROQ_API_KEY` is added in Streamlit Secrets.")
@@ -335,9 +333,9 @@ Question: {question}
 # ----------------------------------------------
 st.markdown("""
 <div style="text-align:center;">
-    <h1>🎓 University FAQ RAG Chatbot</h1>
+    <h1>🎓 University FAQ Assitant</h1>
     <p style="font-size:17px; color:gray;">
-        Ask any question related to university rules, exams, academics, fees, hostels and more.
+        Ask any question related to university admissions,fees, hostels, courses and more.
     </p>
 </div>
 """, unsafe_allow_html=True)
