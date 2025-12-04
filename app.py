@@ -102,6 +102,126 @@
 
 
 # -----------------------------
+# import streamlit as st
+# import PyPDF2
+# import numpy as np
+# import pickle
+# from sentence_transformers import SentenceTransformer
+# from sklearn.neighbors import NearestNeighbors
+# from groq import Groq
+
+# # ----------------------------
+# # Load Groq API key from Streamlit Secrets
+# # ----------------------------
+# client = Groq(api_key=st.secrets["GROQ_API_KEY"])
+
+# # ----------------------------
+# # Load trained ML model
+# # ----------------------------
+# model = pickle.load(open("question_model.pkl", "rb"))
+# tfidf = pickle.load(open("tfidf.pkl", "rb"))
+
+# def classify_question(question):
+#     vector = tfidf.transform([question])
+#     prediction = model.predict(vector)[0]
+#     return prediction
+
+# # ----------------------------
+# # PDF TEXT EXTRACTION
+# # ----------------------------
+# def extract_pdf_text(pdf_file):
+#     reader = PyPDF2.PdfReader(pdf_file)
+#     text = ""
+#     for page in reader.pages:
+#         if page.extract_text():
+#             text += page.extract_text() + "\n"
+#     return text
+
+# # ----------------------------
+# # TEXT CHUNKING
+# # ----------------------------
+# def chunk_text(text, size=400):
+#     words = text.split()
+#     return [" ".join(words[i:i+size]) for i in range(0, len(words), size)]
+
+# # ----------------------------
+# # EMBEDDING MODEL
+# # ----------------------------
+# embedder = SentenceTransformer("all-MiniLM-L6-v2")
+
+# def get_embeddings(texts):
+#     return np.array(embedder.encode(texts)).astype("float32")
+
+# # ----------------------------
+# # NearestNeighbors Index (replacing FAISS)
+# # ----------------------------
+# def build_nn_index(embeddings):
+#     nn = NearestNeighbors(n_neighbors=3, metric='cosine')
+#     nn.fit(embeddings)
+#     return nn
+
+# def search_nn(query, chunks, chunk_emb, nn_index):
+#     q_emb = embedder.encode([query])
+#     distances, indices = nn_index.kneighbors(q_emb)
+#     return [chunks[i] for i in indices[0]]
+
+# # ----------------------------
+# # GROQ LLM ANSWER
+# # ----------------------------
+# def groq_answer(question, context):
+#     prompt = f"""
+# Use ONLY this context to answer the question:
+
+# {context}
+
+# Question: {question}
+# """
+#     res = client.chat.completions.create(
+#         model="llama-3.1-8b-instant",
+#         messages=[{"role": "user", "content": prompt}],
+#         max_tokens=250,
+#         temperature=0
+#     )
+#     return res.choices[0].message.content
+
+# # ----------------------------
+# # STREAMLIT UI
+# # ----------------------------
+# st.title("📘University FAQ RAG Chatbot")
+# st.write("Upload your PDF and ask any question.")
+
+# pdf = st.file_uploader("Upload your FAQ PDF", type="pdf")
+
+# if pdf:
+#     st.success("PDF uploaded successfully!")
+
+#     text = extract_pdf_text(pdf)
+#     chunks = chunk_text(text)
+#     chunk_emb = get_embeddings(chunks)
+#     nn_index = build_nn_index(chunk_emb)
+
+#     question = st.text_input("Ask a question:")
+
+#     if question:
+#         # Step 1: Predict question type
+#         q_type = classify_question(question)
+#         st.write("📌 Question Type:", q_type)
+
+#         # Step 2: Retrieve chunks
+#         retrieved = search_nn(question, chunks, chunk_emb, nn_index)
+#         context = "\n\n".join(retrieved)
+
+#         # Step 3: Generate answer using Groq LLM
+#         answer = groq_answer(question, context)
+
+#         st.subheader("🟦 Answer")
+#         st.write(answer)
+
+#         st.subheader("🔍 Retrieved Chunks Used")
+#         for i, c in enumerate(retrieved):
+#             with st.expander(f"Chunk {i+1}"):
+#                 st.write(c)
+# -------------
 import streamlit as st
 import PyPDF2
 import numpy as np
@@ -110,14 +230,40 @@ from sentence_transformers import SentenceTransformer
 from sklearn.neighbors import NearestNeighbors
 from groq import Groq
 
-# ----------------------------
-# Load Groq API key from Streamlit Secrets
-# ----------------------------
+# ----------------------------------------------
+# Page Configuration
+# ----------------------------------------------
+st.set_page_config(
+    page_title="University FAQ RAG Bot",
+    page_icon="🎓",
+    layout="wide"
+)
+
+# ----------------------------------------------
+# Sidebar
+# ----------------------------------------------
+with st.sidebar:
+    st.title("📚 University FAQ RAG")
+    st.markdown("""
+    ### How to Use:
+    1. Upload the university FAQ PDF  
+    2. Ask any question  
+    3. Model retrieves relevant content  
+    4. LLM generates accurate answer  
+
+    **Powered by Groq + RAG + ML Classification**
+    """)
+    st.markdown("---")
+    st.info("Make sure your `GROQ_API_KEY` is added in Streamlit Secrets.")
+
+# ----------------------------------------------
+# Load API Key
+# ----------------------------------------------
 client = Groq(api_key=st.secrets["GROQ_API_KEY"])
 
-# ----------------------------
-# Load trained ML model
-# ----------------------------
+# ----------------------------------------------
+# Load Classification Model
+# ----------------------------------------------
 model = pickle.load(open("question_model.pkl", "rb"))
 tfidf = pickle.load(open("tfidf.pkl", "rb"))
 
@@ -126,9 +272,9 @@ def classify_question(question):
     prediction = model.predict(vector)[0]
     return prediction
 
-# ----------------------------
+# ----------------------------------------------
 # PDF TEXT EXTRACTION
-# ----------------------------
+# ----------------------------------------------
 def extract_pdf_text(pdf_file):
     reader = PyPDF2.PdfReader(pdf_file)
     text = ""
@@ -137,24 +283,24 @@ def extract_pdf_text(pdf_file):
             text += page.extract_text() + "\n"
     return text
 
-# ----------------------------
-# TEXT CHUNKING
-# ----------------------------
+# ----------------------------------------------
+# CHUNKING
+# ----------------------------------------------
 def chunk_text(text, size=400):
     words = text.split()
     return [" ".join(words[i:i+size]) for i in range(0, len(words), size)]
 
-# ----------------------------
-# EMBEDDING MODEL
-# ----------------------------
+# ----------------------------------------------
+# EMBEDDINGS
+# ----------------------------------------------
 embedder = SentenceTransformer("all-MiniLM-L6-v2")
 
 def get_embeddings(texts):
     return np.array(embedder.encode(texts)).astype("float32")
 
-# ----------------------------
-# NearestNeighbors Index (replacing FAISS)
-# ----------------------------
+# ----------------------------------------------
+# SEARCH Using NearestNeighbors
+# ----------------------------------------------
 def build_nn_index(embeddings):
     nn = NearestNeighbors(n_neighbors=3, metric='cosine')
     nn.fit(embeddings)
@@ -165,12 +311,12 @@ def search_nn(query, chunks, chunk_emb, nn_index):
     distances, indices = nn_index.kneighbors(q_emb)
     return [chunks[i] for i in indices[0]]
 
-# ----------------------------
-# GROQ LLM ANSWER
-# ----------------------------
+# ----------------------------------------------
+# LLM Response
+# ----------------------------------------------
 def groq_answer(question, context):
     prompt = f"""
-Use ONLY this context to answer the question:
+Use ONLY this university context to answer:
 
 {context}
 
@@ -184,41 +330,60 @@ Question: {question}
     )
     return res.choices[0].message.content
 
-# ----------------------------
-# STREAMLIT UI
-# ----------------------------
-st.title("📘University FAQ RAG Chatbot")
-st.write("Upload your PDF and ask any question.")
+# ----------------------------------------------
+# MAIN UI
+# ----------------------------------------------
+st.markdown("""
+<div style="text-align:center;">
+    <h1>🎓 University FAQ RAG Chatbot</h1>
+    <p style="font-size:17px; color:gray;">
+        Ask any question related to university rules, exams, academics, fees, hostels and more.
+    </p>
+</div>
+""", unsafe_allow_html=True)
 
-pdf = st.file_uploader("Upload your FAQ PDF", type="pdf")
+st.markdown("---")
+
+# PDF Upload
+pdf = st.file_uploader("📄 **Upload University FAQ PDF**", type="pdf")
 
 if pdf:
-    st.success("PDF uploaded successfully!")
+    st.success("✅ PDF uploaded successfully!")
 
     text = extract_pdf_text(pdf)
     chunks = chunk_text(text)
     chunk_emb = get_embeddings(chunks)
     nn_index = build_nn_index(chunk_emb)
 
-    question = st.text_input("Ask a question:")
+    st.markdown("### 💬 Ask a Question")
+    question = st.text_input("Type your question here...")
 
     if question:
-        # Step 1: Predict question type
+        # Question type
         q_type = classify_question(question)
-        st.write("📌 Question Type:", q_type)
 
-        # Step 2: Retrieve chunks
+        st.info(f"📌 **Predicted Question Type:** `{q_type}`")
+
+        # Retrieve relevant chunks
         retrieved = search_nn(question, chunks, chunk_emb, nn_index)
         context = "\n\n".join(retrieved)
 
-        # Step 3: Generate answer using Groq LLM
+        # LLM Answer
         answer = groq_answer(question, context)
 
-        st.subheader("🟦 Answer")
-        st.write(answer)
+        st.markdown("### 🟦 Chatbot Answer")
 
-        st.subheader("🔍 Retrieved Chunks Used")
+        st.markdown(f"""
+        <div style="padding:15px; border-radius:10px; background:#eef6ff;">
+        {answer}
+        </div>
+        """, unsafe_allow_html=True)
+
+        st.markdown("### 🔍 Retrieved Relevant Chunks")
         for i, c in enumerate(retrieved):
             with st.expander(f"Chunk {i+1}"):
                 st.write(c)
+
+else:
+    st.warning("⬆️ Please upload a FAQ PDF to begin.")
 
