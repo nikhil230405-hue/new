@@ -187,7 +187,7 @@ Question: {question}
 # ----------------------------
 # STREAMLIT UI
 # ----------------------------
-st.title("📘 Simple University FAQ RAG Chatbot (Groq + NearestNeighbors)")
+st.title("📘University FAQ RAG Chatbot")
 st.write("Upload your PDF and ask any question.")
 
 pdf = st.file_uploader("Upload your FAQ PDF", type="pdf")
