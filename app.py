@@ -249,9 +249,13 @@ with st.sidebar:
     1. Upload the university FAQ PDF  
     2. Ask any question  
     3. Model retrieves relevant content  
-    4. LLM generatesanswer  
+    4. LLM generates accurate answer  
+
+    **Powered by Groq + RAG + ML Classification**
     """)
     st.markdown("---")
+    st.info("Make sure your `GROQ_API_KEY` is added in Streamlit Secrets.")
+
 # ----------------------------------------------
 # Load API Key
 # ----------------------------------------------
@@ -331,9 +335,9 @@ Question: {question}
 # ----------------------------------------------
 st.markdown("""
 <div style="text-align:center;">
-    <h1>🎓 University FAQ RAGChatbot</h1>
+    <h1>🎓 University FAQ RAG Chatbot</h1>
     <p style="font-size:17px; color:gray;">
-        Ask questionS related to university Admission, fees, hostels, courses.
+        Ask any question related to university rules, exams, academics, fees, hostels and more.
     </p>
 </div>
 """, unsafe_allow_html=True)
@@ -355,32 +359,26 @@ if pdf:
     question = st.text_input("Type your question here...")
 
     if question:
-        # Question type
         q_type = classify_question(question)
-
         st.info(f"📌 **Predicted Question Type:** `{q_type}`")
 
-        # Retrieve relevant chunks
         retrieved = search_nn(question, chunks, chunk_emb, nn_index)
         context = "\n\n".join(retrieved)
 
-        # LLM Answer
         answer = groq_answer(question, context)
 
-            st.markdown("### 🟦 Chatbot Answer")
-
-            st.markdown(f"""
-            <div style="
-                padding:18px; 
-                border-radius:10px; 
-                background:#000000; 
-                color:white; 
-                font-size:16px; 
-                line-height:1.6;">
-            {answer}
-            </div>
-            """, unsafe_allow_html=True)
-
+        st.markdown("### 🟦 Chatbot Answer")
+        st.markdown(f"""
+        <div style="
+            padding:18px; 
+            border-radius:10px; 
+            background:#000000; 
+            color:white; 
+            font-size:16px; 
+            line-height:1.6;">
+        {answer}
+        </div>
+        """, unsafe_allow_html=True)
 
         st.markdown("### 🔍 Retrieved Relevant Chunks")
         for i, c in enumerate(retrieved):
