@@ -249,13 +249,9 @@ with st.sidebar:
     1. Upload the university FAQ PDF  
     2. Ask any question  
     3. Model retrieves relevant content  
-    4. LLM generates accurate answer  
-
-    **Powered by Groq + RAG + ML Classification**
+    4. LLM generatesanswer  
     """)
     st.markdown("---")
-    st.info("Make sure your `GROQ_API_KEY` is added in Streamlit Secrets.")
-
 # ----------------------------------------------
 # Load API Key
 # ----------------------------------------------
@@ -335,9 +331,9 @@ Question: {question}
 # ----------------------------------------------
 st.markdown("""
 <div style="text-align:center;">
-    <h1>🎓 University FAQ RAG Chatbot</h1>
+    <h1>🎓 University FAQ RAGChatbot</h1>
     <p style="font-size:17px; color:gray;">
-        Ask any question related to university rules, exams, academics, fees, hostels and more.
+        Ask questionS related to university Admission, fees, hostels, courses.
     </p>
 </div>
 """, unsafe_allow_html=True)
