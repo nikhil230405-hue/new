@@ -367,13 +367,20 @@ if pdf:
         # LLM Answer
         answer = groq_answer(question, context)
 
-        st.markdown("### 🟦 Chatbot Answer")
+            st.markdown("### 🟦 Chatbot Answer")
 
-        st.markdown(f"""
-        <div style="padding:15px; border-radius:10px; background:#eef6ff;">
-        {answer}
-        </div>
-        """, unsafe_allow_html=True)
+            st.markdown(f"""
+            <div style="
+                padding:18px; 
+                border-radius:10px; 
+                background:#000000; 
+                color:white; 
+                font-size:16px; 
+                line-height:1.6;">
+            {answer}
+            </div>
+            """, unsafe_allow_html=True)
+
 
         st.markdown("### 🔍 Retrieved Relevant Chunks")
         for i, c in enumerate(retrieved):
